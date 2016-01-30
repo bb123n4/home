@@ -19,19 +19,28 @@
 			*/
 			
 			/*Followings are about how to draw*/
+			//get the top-left absolute coordinate of one grid
+			function convert(gridCoor){
+				return gridCoor * 80;
+			}
+			
 			cxt.clearRect(0,0,800,800);//clear the draw board
 			cxt.fillStyle="#FF0000"; // choose the color of the pen to red
-			var i = 800;
 			function draw() {// the function to draw 
-			    i = i + 0.5;
-				if (i >=800) {
-					i = 0;
-			   }
-				cxt.clearRect(0,0,800,800);
-				cxt.fillRect(0,0,i,i);
+				for (var i = 0; i < 8; i++ )
+					for (var j = 0; j < 8; j++ ) {//draw the gameboard
+						//if ( i % 2 == j % 2 ) cxt.fillStyle="#DCDCDC";
+						//else cxt.fillStyle="GhostWhite";
+						cxt.fillStyle = getGrideFill(i,j);
+					cxt.fillRect(convert(i),convert(j),80,80);
+					}
 			}
 			setInterval(draw,1); // refresh the game board every unit time
 			
+			function getGrideFill(i,j)
+			{
+				
+			}
 		</script>
 	</body>
 </html>
