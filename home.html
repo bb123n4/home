@@ -1,15 +1,20 @@
 <html>
 	<body>
 		<div style="width:100%; text-align:center"> 
-			<canvas id="e" width="800" height="800" tabindex="0" style="border:1px solid #c3c3c3;" > 
+			<canvas id="e" width="640" height="640" tabindex="0" style="border:1px solid #c3c3c3;" > 
 				Your browser does not support the canvas element. 
 			</canvas>
 		</div>
+		
+
 		<script type="text/javascript">   
 		   	var canvas = document.getElementById("e"); 
 			var cxt = canvas.getContext("2d"); //pass canvas element
 			
+			var cameraPos;
+			var playerPos;
 			
+		
 			/*
 				object to define:
 					grid & player
@@ -18,13 +23,9 @@
 					gamelogic
 			*/
 			
-			/*Followings are about how to draw*/
-			//get the top-left absolute coordinate of one grid
-			function convert(gridCoor){
-				return gridCoor * 80;
-			}
+			/*Followings are about how to draw*/			
 			
-			cxt.clearRect(0,0,800,800);//clear the draw board
+			cxt.clearRect(0,0,640,640);//clear the draw board
 			cxt.fillStyle="#FF0000"; // choose the color of the pen to red
 			function draw() {// the function to draw 
 				for (var i = 0; i < 8; i++ )
@@ -36,10 +37,16 @@
 					}
 			}
 			setInterval(draw,1); // refresh the game board every unit time
-			
-			function getGrideFill(i,j)
-			{
-				
+
+			function convert(){
+				if(playerPos.x==cameraPos.x+160)
+					cameraPos.x-=80;
+				if(playerPos.x==cameraPos.x+400)
+					cameraPos.x+=80;
+				if(playerPos.y==cameraPos.y+160)
+					cameraPos.y-=80;
+				if(playerPos.y==cameraPos.y+400)
+					cameraPos.y+=80;
 			}
 		</script>
 	</body>
