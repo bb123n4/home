@@ -54,7 +54,9 @@ var score =0;
 
 //Energy
 
+
 var energy = 300;
+
 var enReady = false;
 var enImage = new Image();
 enImage.onload = function () {
@@ -96,10 +98,10 @@ var lastDir=-1;
 var step=0;
 var d = {x:0,y:0};
 var upBorder,downBorder,leftBorder,rightBorder;
-upBorder = -canvas.height; 
-downBorder = canvas.height;
-leftBorder = -canvas.width;
-rightBorder = canvas.width;  // Border Collision
+upBorder = -canvas.height - 120; 
+downBorder = canvas.height + 120 ;
+leftBorder = -canvas.width - 60;
+rightBorder = canvas.width + 60;  // Border Collision wiht offset 
 
 //up position
 var playerPic0_day=["move_Anim/day/up/player_child_up_1.png","move_Anim/day/up/player_child_up_2.png","move_Anim/day/up/player_child_up_3.png","move_Anim/day/up/player_child_up_4.png"];
@@ -371,6 +373,16 @@ function finish()
 
 }
 
+function happyEnding()
+{
+	//finish image
+	var haImage = new Image();
+	haImage.onload = function () {
+		ctx.drawImage(haImage, 0, 0);
+	};
+	haImage.src = "images/happy.png";
+}
+
 //------------------------------------------------EEEEEEEEEnd: real thing------------------------------------------
 
 // Draw everything
@@ -420,7 +432,7 @@ if (playerReady && playerReadyB) {
 		
 	if (enReady) 
 		
-        ctx.drawImage(enImage, 100, 64);
+        ctx.drawImage(enImage, 200, 10);
 	
     ctx.fillStyle = "rgb(250, 250, 250)";
     ctx.font = "24px Helvetica";
@@ -460,6 +472,11 @@ var main = function () {
     if(energy == 0)
 	{
 		finish();
+		return;
+	}
+	if(Math.sqrt((d.x - 0)*(d.x - 0) + (d.y - 0)*(d.y - 0)) < 20 && day_or_night == 1)
+	{
+		happyEnding();
 		return;
 	}
 	set_day_night();
