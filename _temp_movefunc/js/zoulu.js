@@ -13,6 +13,14 @@ bgImage.onload = function () {
 };
 bgImage.src = "images/bg.jpg";
 
+// Background image
+var bgReady_nite = false;
+var bgImage_nite = new Image();
+bgImage_nite.onload = function () {
+    bgReady_nite = false;
+};
+bgImage_nite.src = "images/night_cover.png";
+
 var camera = {
     x:640,
     y:640,
@@ -42,6 +50,9 @@ playerImageB.onload = function () {
 };
 //playerImageB.src = "move_Anim/day/down/player_child_down_1.png";
 
+//the location of people-center, to be updated in the main loop
+var realX = 0 ;
+var realY = 0;
 
 var player = {};
 var metric=3;
@@ -110,6 +121,8 @@ var reset = function () {
 var set_day_night = function () {
 
     if (day_or_night==0){
+
+        bgReady_nite = true;
         //up position
         playerPic0=playerPic0_day;
         //down position
@@ -120,6 +133,8 @@ var set_day_night = function () {
         playerPic3=playerPic3_day;
     }
     else {
+
+        bgReady_nite = false;
         //up position
         playerPic0=playerPic0_nite;
         //down position
@@ -132,6 +147,8 @@ var set_day_night = function () {
 
 };
 var move = function(){
+    realX = player.x + camera.x + 40;
+    realY = player.y + camera.y + 40;
     if (manDir!=lastDir){
         switch(manDir){
             case 0: { // Player holding up
@@ -186,8 +203,7 @@ function allObstacle() {
 	fuck = minD;
 	return closetOb;
 }
-var realX = 0 ;
-var realY = 0;
+
 // Update player object
 var update = function (modifier) {
 	var co = allObstacle(); //closetObstacle
@@ -266,12 +282,27 @@ var update = function (modifier) {
 function get_cam(){
     return camera;
 }
-
+function draw_obstacles(){
+    for (var i = 0; i< noObstacle; i++) {
+        ctx.beginPath();
+        ctx.arc(obstacleX[i] - camera.x, obstacleY[i] - camera.y,obstacleR[i] , 0, 2 * Math.PI, false);
+        ctx.fillStyle = 'red';
+        if (i == 0)
+            ctx.fillStyle = 'green';
+        ctx.fill();
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = '#003300';
+        ctx.stroke();
+    }
+}
 
 //------------------------------------------------EEEEEEEEEnd: real thing------------------------------------------
 
 // Draw everything
 var render = function () {
+
+
+
     if (bgReady) {
         ctx.drawImage(bgImage, -camera.x, -camera.y);
     }
@@ -280,20 +311,13 @@ var render = function () {
         ctx.drawImage(playerImageB, player.x, player.y);
         ctx.drawImage(playerImage, player.x, player.y); //why 2
     }
-	realX = player.x + camera.x + 40;
-	realY = player.y + camera.y + 40;
-	
-	for (var i = 0; i< noObstacle; i++) {
-	  ctx.beginPath();
-      ctx.arc(obstacleX[i] - camera.x, obstacleY[i] - camera.y,obstacleR[i] , 0, 2 * Math.PI, false);
-	  ctx.fillStyle = 'red';
-	  if (i == 0)
-      ctx.fillStyle = 'green';
-      ctx.fill();
-      ctx.lineWidth = 5;
-      ctx.strokeStyle = '#003300';
-      ctx.stroke();
-	}
+
+    draw_obstacles();
+
+    //the cover for night vision
+    if (bgReady_nite) {
+        ctx.drawImage(bgImage_nite, 0, 0);
+    }
 
     // Score
     ctx.fillStyle = "rgb(250, 250, 250)";
