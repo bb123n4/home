@@ -14,12 +14,6 @@ bgImage.onload = function () {
 bgImage.src = "images/background.png";
 
 
-// Reset the game when the player catches a monster
-var reset = function () {
-    player.x = canvas.width / 2;
-    player.y = canvas.height / 2;
-
-};
 
 
 
@@ -28,9 +22,10 @@ var reset = function () {
 
 //------------------------------------------------real thing------------------------------------------
 
-
-
-
+//day_or_night should be a global variable:
+//  0-day
+//  1-night
+var day_or_night=0;
 
 // Player image
 var playerReady = false;
@@ -38,14 +33,14 @@ var playerImage = new Image();
 playerImage.onload = function () {
     playerReady = true;
 };
-playerImage.src = "move_Anim/day/down/player_child_down_1.png";
+//playerImage.src = "move_Anim/day/down/player_child_down_1.png";
 //Player image buffer for reducing flickering
 var playerReadyB = false;
 var playerImageB = new Image();
 playerImageB.onload = function () {
     playerReadyB = true;
 };
-playerImageB.src = "move_Anim/day/down/player_child_down_1.png";
+//playerImageB.src = "move_Anim/day/down/player_child_down_1.png";
 
 
 var player = {};
@@ -62,13 +57,24 @@ var camera = {
 };
 
 //up position
-var playerPic0=["move_Anim/day/up/player_child_up_1.png","move_Anim/day/up/player_child_up_2.png","move_Anim/day/up/player_child_up_3.png","move_Anim/day/up/player_child_up_4.png"];
+var playerPic0_day=["move_Anim/day/up/player_child_up_1.png","move_Anim/day/up/player_child_up_2.png","move_Anim/day/up/player_child_up_3.png","move_Anim/day/up/player_child_up_4.png"];
 //down position
-var playerPic1=["move_Anim/day/down/player_child_down_1.png","move_Anim/day/down/player_child_down_2.png","move_Anim/day/down/player_child_down_3.png","move_Anim/day/down/player_child_down_4.png"];
+var playerPic1_day=["move_Anim/day/down/player_child_down_1.png","move_Anim/day/down/player_child_down_2.png","move_Anim/day/down/player_child_down_3.png","move_Anim/day/down/player_child_down_4.png"];
 //left position
-var playerPic2=["move_Anim/day/left/player_child_left_1.png","move_Anim/day/left/player_child_left_2.png","move_Anim/day/left/player_child_left_3.png","move_Anim/day/left/player_child_left_4.png"];
+var playerPic2_day=["move_Anim/day/left/player_child_left_1.png","move_Anim/day/left/player_child_left_2.png","move_Anim/day/left/player_child_left_3.png","move_Anim/day/left/player_child_left_4.png"];
 //right position
-var playerPic3=["move_Anim/day/right/player_child_right_1.png","move_Anim/day/right/player_child_right_2.png","move_Anim/day/right/player_child_right_3.png","move_Anim/day/right/player_child_right_4.png"];
+var playerPic3_day=["move_Anim/day/right/player_child_right_1.png","move_Anim/day/right/player_child_right_2.png","move_Anim/day/right/player_child_right_3.png","move_Anim/day/right/player_child_right_4.png"];
+
+
+//up position
+var playerPic0_nite=["move_Anim/night/up/player_child_up_1.png","move_Anim/night/up/player_child_up_2.png","move_Anim/night/up/player_child_up_3.png","move_Anim/night/up/player_child_up_4.png"];
+//down position
+var playerPic1_nite=["move_Anim/night/down/player_child_down_1.png","move_Anim/night/down/player_child_down_2.png","move_Anim/night/down/player_child_down_3.png","move_Anim/night/down/player_child_down_4.png"];
+//left position
+var playerPic2_nite=["move_Anim/night/left/player_child_left_1.png","move_Anim/night/left/player_child_left_2.png","move_Anim/night/left/player_child_left_3.png","move_Anim/night/left/player_child_left_4.png"];
+//right position
+var playerPic3_nite=["move_Anim/night/right/player_child_right_1.png","move_Anim/night/right/player_child_right_2.png","move_Anim/night/right/player_child_right_3.png","move_Anim/night/right/player_child_right_4.png"];
+
 
 // Handle keyboard controls
 var keysDown = {};
@@ -91,6 +97,39 @@ addEventListener("keyup", function (e) {
 }, false);
 
 
+// init the game: player position, camera position and the image path to be loaded
+var reset = function () {
+    player.x = canvas.width / 2;
+    player.y = canvas.height / 2;
+    set_day_night();
+    playerImage.src = playerPic1[0];
+    playerImageB.src = playerImage.src;
+};
+// the image paths to be loaded according to daytime or night
+var set_day_night = function () {
+
+    if (day_or_night==0){
+        //up position
+        playerPic0=playerPic0_day;
+        //down position
+        playerPic1=playerPic1_day;
+        //left position
+        playerPic2=playerPic2_day;
+        //right position
+        playerPic3=playerPic3_day;
+    }
+    else {
+        //up position
+        playerPic0=playerPic0_nite;
+        //down position
+        playerPic1=playerPic1_nite;
+        //left position
+        playerPic2=playerPic2_nite;
+        //right position
+        playerPic3=playerPic3_nite;
+    }
+
+};
 var move = function(){
     if (manDir!=lastDir){
         switch(manDir){
@@ -169,6 +208,8 @@ function get_cam(){
 
 // Draw everything
 var render = function () {
+
+
     if (bgReady) {
         ctx.drawImage(bgImage, 0, 0);
     }
@@ -191,16 +232,10 @@ var render = function () {
 
 // The main game loop
 var main = function () {
-    var now = Date.now();
-    var delta = now - then;
 
-    //update(metric);
     move();
     render();
-
-    then = now;
-
-    // Request to do this again ASAP
+    // the main loop: Request to do this again ASAP
     requestAnimationFrame(main);
 };
 
@@ -209,6 +244,5 @@ var w = window;
 requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
 
 // Let's play this game!
-var then = Date.now();
 reset();
 main();
