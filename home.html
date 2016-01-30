@@ -13,6 +13,12 @@
 			
 			var cameraPos;
 			var playerPos;
+
+			var img = new Image();
+        	//img.onload = imageLoaded;
+        	img.src = 'background.jpg';
+
+
 			
 		
 			/*
@@ -26,17 +32,24 @@
 			/*Followings are about how to draw*/			
 			
 			cxt.clearRect(0,0,640,640);//clear the draw board
-			cxt.fillStyle="#FF0000"; // choose the color of the pen to red
+			//cxt.fillStyle="#FF0000"; // choose the color of the pen to red
+			/*
 			function draw() {// the function to draw 
 				for (var i = 0; i < 8; i++ )
 					for (var j = 0; j < 8; j++ ) {//draw the gameboard
-						//if ( i % 2 == j % 2 ) cxt.fillStyle="#DCDCDC";
-						//else cxt.fillStyle="GhostWhite";
-						cxt.fillStyle = getGrideFill(i,j);
-					cxt.fillRect(convert(i),convert(j),80,80);
+						if ( i % 2 == j % 2 ) cxt.fillStyle="#DCDCDC";
+						else cxt.fillStyle="GhostWhite";
+						//cxt.fillStyle = getGrideFill(i,j);
+					cxt.fillRect(i*80,j*80,80,80);
 					}
 			}
-			setInterval(draw,1); // refresh the game board every unit time
+			*/
+
+			function drawBg(){
+				cxt.drawImage(img,-100,0);
+			}
+
+			setInterval(drawBg,1); // refresh the game board every unit time
 
 			function convert(){
 				if(playerPos.x==cameraPos.x+160)
@@ -48,6 +61,9 @@
 				if(playerPos.y==cameraPos.y+400)
 					cameraPos.y+=80;
 			}
+
+
+
 		</script>
 	</body>
 </html>

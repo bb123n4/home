@@ -1,8 +1,8 @@
 // Create the canvas
 var canvas = document.createElement("canvas");
 var ctx = canvas.getContext("2d");
-canvas.width = 512;
-canvas.height = 480;
+canvas.width = 640;
+canvas.height = 640;
 document.body.appendChild(canvas);
 
 // Background image
@@ -11,14 +11,20 @@ var bgImage = new Image();
 bgImage.onload = function () {
     bgReady = true;
 };
-bgImage.src = "images/background.png";
+bgImage.src = "images/background.jpg";
 
+var camera = {
+    x:100,
+    y:100,
+    offset_X:30,
+    offset_Y:30
+};
 
 // Reset the game when the player catches a monster
 var reset = function () {
     player.x = canvas.width / 2;
     player.y = canvas.height / 2;
-
+    
 };
 
 
@@ -56,10 +62,7 @@ var lastDir=-1;
 //the status for selecting player image
 var step=0;
 
-var camera = {
-    offset_X:30,
-    offset_Y:30
-};
+
 
 //up position
 var playerPic0=["move_Anim/day/up/player_child_up_1.png","move_Anim/day/up/player_child_up_2.png","move_Anim/day/up/player_child_up_3.png","move_Anim/day/up/player_child_up_4.png"];
@@ -113,41 +116,42 @@ var move = function(){
         }
     }
     update(metric);
-    cam_pos();
+    //cam_pos();
 };
 
 
-var cam_pos = function(){
-    camera.x=player.x-camera.offset_X;
-    camera.y=player.y-camera.offset_Y;
-};
 // Update player object
 var update = function (modifier) {
     switch(manDir){
 
         case 0: { // Player holding up
-            player.y -= modifier;
+            //player.y -= modifier;
+            camera.y -= modifier;
             lastDir=manDir;
             manDir=-1;
             playerImage.src = playerPic0[step];
             break;
         }
         case 1: { // Player holding down
-            player.y += modifier;
+            //player.y += modifier;
+            camera.y+=modifier;
             lastDir=manDir;
             manDir=-1;
             playerImage.src = playerPic1[step];
             break;
             }
         case 2:{ // Player holding left
-            player.x -= modifier;
+            //player.x -= modifier;
+            camera.x-= modifier;
+
             lastDir=manDir;
             manDir=-1;
             playerImage.src = playerPic2[step];
             break;
             }
         case 3: { // Player holding right
-            player.x += modifier;
+            //player.x += modifier;
+            camera.x+=modifier;
             lastDir=manDir;
             manDir=-1;
             playerImage.src = playerPic3[step];
@@ -166,11 +170,10 @@ function get_cam(){
 //------------------------------------------------EEEEEEEEEnd: real thing------------------------------------------
 
 
-
 // Draw everything
 var render = function () {
     if (bgReady) {
-        ctx.drawImage(bgImage, 0, 0);
+        ctx.drawImage(bgImage, -camera.x, -camera.y);
     }
 
     if (playerReady) {
@@ -191,14 +194,14 @@ var render = function () {
 
 // The main game loop
 var main = function () {
-    var now = Date.now();
-    var delta = now - then;
+    //var now = Date.now();
+    //var delta = now - then;
 
     //update(metric);
     move();
     render();
 
-    then = now;
+//    then = now;
 
     // Request to do this again ASAP
     requestAnimationFrame(main);
@@ -209,6 +212,6 @@ var w = window;
 requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
 
 // Let's play this game!
-var then = Date.now();
+//var then = Date.now();
 reset();
 main();
