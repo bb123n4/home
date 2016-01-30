@@ -54,7 +54,7 @@ var score =0;
 
 //Energy
 
-var energy = 100;
+var energy = 10;
 var enReady = false;
 var enImage = new Image();
 enImage.onload = function () {
@@ -357,6 +357,18 @@ function get_cam(){
     }
 }*/
 
+function finish()
+{
+	//finish image
+	var fiImage = new Image();
+	fiImage.onload = function () {
+		ctx.drawImage(fiImage, 0, 0);
+		//document.findElementById("bgm").remove();
+	};
+	fiImage.src = "images/finish.png";
+
+}
+
 //------------------------------------------------EEEEEEEEEnd: real thing------------------------------------------
 
 // Draw everything
@@ -386,7 +398,7 @@ if (playerReady && playerReadyB) {
 	
 	if(gfReady){
 	    if((Math.sqrt((d.x - gift_x)*(d.x - gift_x) + (d.y - gift_y)*(d.y - gift_y) ) > 30))
-		ctx.drawImage(gfImage, -d.x+200+gift_x, -d.y+200+gift_y); 
+		ctx.drawImage(gfImage, -d.x+260+gift_x, -d.y+260+gift_y); 
 		else
 		{
 			if(giftPicked == false)
@@ -406,7 +418,7 @@ if (playerReady && playerReadyB) {
 		
 	if (enReady) 
 		
-        ctx.drawImage(enImage, 80, 64);
+        ctx.drawImage(enImage, 100, 64);
 	
     ctx.fillStyle = "rgb(250, 250, 250)";
     ctx.font = "24px Helvetica";
@@ -417,13 +429,18 @@ if (playerReady && playerReadyB) {
 	ctx.fillStyle = "blue";
     ctx.fillText(the_text, 32, 32);
 	var the_text="Energy:" + energy;
-	ctx.fillStyle = "black";
+	ctx.fillStyle = "while";
     ctx.fillText(the_text, 32, 64);
 };
 
 // The main game loop
 var main = function () {
-    set_day_night();
+    if(energy == 0)
+	{
+		finish();
+		return;
+	}
+	set_day_night();
 	move();
     render();
     requestAnimationFrame(main);
