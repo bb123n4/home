@@ -13,35 +13,12 @@ bgImage.onload = function () {
 };
 bgImage.src = "images/background.png";
 
-// Hero image
-var heroReady = false;
-var heroImage = new Image();
-heroImage.onload = function () {
-    heroReady = true;
-};
-heroImage.src = "images/hero.png";
-
-// Monster image
-var monsterReady = false;
-var monsterImage = new Image();
-monsterImage.onload = function () {
-    monsterReady = true;
-};
-monsterImage.src = "images/monster.png";
-
-// Game objects
-
-var monster = {};
-var monstersCaught = 0;
 
 // Reset the game when the player catches a monster
 var reset = function () {
-    hero.x = canvas.width / 2;
-    hero.y = canvas.height / 2;
+    player.x = canvas.width / 2;
+    player.y = canvas.height / 2;
 
-    // Throw the monster somewhere on the screen randomly
-    monster.x = 32 + (Math.random() * (canvas.width - 64));
-    monster.y = 32 + (Math.random() * (canvas.height - 64));
 };
 
 
@@ -54,18 +31,45 @@ var reset = function () {
 
 
 
-var hero = {};
-var metric=20;
+
+// Player image
+var playerReady = false;
+var playerImage = new Image();
+playerImage.onload = function () {
+    playerReady = true;
+};
+playerImage.src = "move_Anim/day/down/player_child_down_1.png";
+//Player image buffer for reducing flickering
+var playerReadyB = false;
+var playerImageB = new Image();
+playerImageB.onload = function () {
+    playerReadyB = true;
+};
+playerImageB.src = "move_Anim/day/down/player_child_down_1.png";
+
+
+var player = {};
+var metric=3;
+//current and last facing directions
 var manDir=-1;
 var lastDir=-1;
+//the status for selecting player image
 var step=0;
+
+var camera = {
+    offset_X:30,
+    offset_Y:30
+};
+
+//up position
 var playerPic0=["move_Anim/day/up/player_child_up_1.png","move_Anim/day/up/player_child_up_2.png","move_Anim/day/up/player_child_up_3.png","move_Anim/day/up/player_child_up_4.png"];
-
+//down position
 var playerPic1=["move_Anim/day/down/player_child_down_1.png","move_Anim/day/down/player_child_down_2.png","move_Anim/day/down/player_child_down_3.png","move_Anim/day/down/player_child_down_4.png"];
-
+//left position
 var playerPic2=["move_Anim/day/left/player_child_left_1.png","move_Anim/day/left/player_child_left_2.png","move_Anim/day/left/player_child_left_3.png","move_Anim/day/left/player_child_left_4.png"];
-
+//right position
 var playerPic3=["move_Anim/day/right/player_child_right_1.png","move_Anim/day/right/player_child_right_2.png","move_Anim/day/right/player_child_right_3.png","move_Anim/day/right/player_child_right_4.png"];
+
 // Handle keyboard controls
 var keysDown = {};
 
@@ -89,77 +93,77 @@ addEventListener("keyup", function (e) {
 
 var move = function(){
     if (manDir!=lastDir){
-        //step=0;
+        switch(manDir){
+            case 0: { // Player holding up
+                playerImageB.src = playerPic0[0];
+                break;
+            }
+            case 1: { // Player holding down
+                playerImageB.src = playerPic1[0];
+                break;
+            }
+            case 2:{ // Player holding left
+                playerImageB.src = playerPic2[0];
+                break;
+            }
+            case 3: { // Player holding right
+                playerImageB.src = playerPic3[0];
+                break;
+            }
+        }
     }
-
     update(metric);
-}
+    cam_pos();
+};
 
-// Update game objects
+
+var cam_pos = function(){
+    camera.x=player.x-camera.offset_X;
+    camera.y=player.y-camera.offset_Y;
+};
+// Update player object
 var update = function (modifier) {
     switch(manDir){
 
         case 0: { // Player holding up
-            hero.y -= modifier;
+            player.y -= modifier;
             lastDir=manDir;
             manDir=-1;
-            heroImage.src = playerPic0[step];
+            playerImage.src = playerPic0[step];
             break;
         }
         case 1: { // Player holding down
-            hero.y += modifier;
+            player.y += modifier;
             lastDir=manDir;
             manDir=-1;
-            heroImage.src = playerPic1[step];
+            playerImage.src = playerPic1[step];
             break;
             }
         case 2:{ // Player holding left
-            hero.x -= modifier;
+            player.x -= modifier;
             lastDir=manDir;
             manDir=-1;
-            heroImage.src = playerPic2[step];
+            playerImage.src = playerPic2[step];
             break;
             }
         case 3: { // Player holding right
-            hero.x += modifier;
+            player.x += modifier;
             lastDir=manDir;
             manDir=-1;
-            heroImage.src = playerPic3[step];
+            playerImage.src = playerPic3[step];
             break;
             }
 
     }
 
-
-    // Are they touching?
-    if (
-        hero.x <= (monster.x + 32)
-        && monster.x <= (hero.x + 32)
-        && hero.y <= (monster.y + 32)
-        && monster.y <= (hero.y + 32)
-    ) {
-        ++monstersCaught;
-        reset();
-    }
 };
+//return the object camera, camera.x and camera.y are the camera locations
+function get_cam(){
+    return camera;
+}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//------------------------------------------------real thing------------------------------------------
+//------------------------------------------------EEEEEEEEEnd: real thing------------------------------------------
 
 
 
@@ -169,20 +173,20 @@ var render = function () {
         ctx.drawImage(bgImage, 0, 0);
     }
 
-    if (heroReady) {
-        ctx.drawImage(heroImage, hero.x, hero.y);
+    if (playerReady) {
+        ctx.drawImage(playerImageB, player.x, player.y);
+        ctx.drawImage(playerImage, player.x, player.y);
     }
 
-    if (monsterReady) {
-        ctx.drawImage(monsterImage, monster.x, monster.y);
-    }
 
     // Score
     ctx.fillStyle = "rgb(250, 250, 250)";
     ctx.font = "24px Helvetica";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
-    ctx.fillText("Goblins caught: " + step, 32, 32);
+    var the_text="step:" + step +" x:"+player.x+" y:"+player.y+" CamX:"+get_cam().x+" CamY:"+get_cam().y;
+    ctx.fillText(the_text, 32, 32);
+
 };
 
 // The main game loop
