@@ -1,6 +1,8 @@
 // Create the canvas
+// Resizes the new window
 var canvas = document.createElement("canvas");
 var ctx = canvas.getContext("2d");
+canvas.style.marginTop= "100px";
 canvas.width = 640;
 canvas.height = 640;
 document.body.appendChild(canvas);
@@ -11,7 +13,15 @@ var bgImage = new Image();
 bgImage.onload = function () {
     bgReady = true;
 };
-bgImage.src = "images/bg.jpg";
+bgImage.src = "images/bigBG.png";
+
+// Background cover for night vision
+var bgReady_nite = false;
+var bgImage_nite = new Image();
+bgImage_nite.onload = function () {
+    bgReady_nite = false;
+};
+bgImage_nite.src = "images/night_cover.png";
 
 //gift image
 var gfReady = false;
@@ -35,6 +45,7 @@ var camera = {
 //  0-day
 //  1-night
 var day_or_night=0;
+var darken_timer=0;
 
 
 
@@ -72,9 +83,12 @@ playerImageB.onload = function () {
     playerReadyB = true;
 };
 
+//the location of people-center, to be updated in the main loop
+var realX = 0 ;
+var realY = 0;
 
 var player = {};
-var metric=3;
+var metric=6;
 //current and last facing directions
 var manDir=-1;
 var lastDir=-1;
@@ -86,7 +100,6 @@ upBorder = -canvas.height;
 downBorder = canvas.height;
 leftBorder = -canvas.width;
 rightBorder = canvas.width;  // Border Collision
-
 
 //up position
 var playerPic0_day=["move_Anim/day/up/player_child_up_1.png","move_Anim/day/up/player_child_up_2.png","move_Anim/day/up/player_child_up_3.png","move_Anim/day/up/player_child_up_4.png"];
@@ -112,19 +125,26 @@ var playerPic3_nite=["move_Anim/night/right/player_child_right_1.png","move_Anim
 var keysDown = {};
 
 addEventListener("keydown", function (e) {
+	
     keysDown[e.keyCode] = true;
     step=(step+1)%4;
-    if(e.keyCode == 40)
+    if(e.keyCode == 40){
         manDir=1;
-    if(e.keyCode == 38)
+		document.getElementById("stepSound").play();
+	}
+    if(e.keyCode == 38){
+		document.getElementById("stepSound").play();
         manDir=0;
-    if(e.keyCode == 37)
+	}
+    if(e.keyCode == 37){
+		document.getElementById("stepSound").play();
         manDir=2;
-    if(e.keyCode == 39)
+	}
+    if(e.keyCode == 39){
         manDir=3;
-	
+		document.getElementById("stepSound").play();
+	}
 	giftPicked = false;
-	
 }, false);
 
 addEventListener("keyup", function (e) {
@@ -134,8 +154,8 @@ addEventListener("keyup", function (e) {
 
 // init the game: player position, camera position and the image path to be loaded
 var reset = function () {
-    player.x = canvas.width / 2;
-    player.y = canvas.height / 2;
+    player.x = canvas.width / 2 - 40;
+    player.y = canvas.height / 2 - 40;
     set_day_night();
     playerImage.src = playerPic1[0];
     playerImageB.src = playerImage.src;
@@ -150,10 +170,20 @@ function resetGift()
 	gift_y = Math.pow(-1,Math.round((Math.random()*10%2)))*Math.round((Math.random()*1000%638));
 }
 
+var darken_effect = function(){
+    if(darken_timer<5){
+        darken_timer++;
+    }
+    ctx.fillStyle = "rgba(0,0,0,0.2)";
+    ctx.fillRect(0,0,640,640);
+};
+
 // the image paths to be loaded according to daytime or night
 var set_day_night = function () {
 
     if (day_or_night==0){
+
+        bgReady_nite = false;
         //up position
         playerPic0=playerPic0_day;
         //down position
@@ -164,6 +194,7 @@ var set_day_night = function () {
         playerPic3=playerPic3_day;
     }
     else {
+        bgReady_nite = true;
         //up position
         playerPic0=playerPic0_nite;
         //down position
@@ -176,7 +207,9 @@ var set_day_night = function () {
 
 };
 var move = function(){
-    if (manDir!=lastDir){
+    realX = player.x + camera.x + 40;
+    realY = player.y + camera.y + 40;
+    //if (manDir!=lastDir){
         switch(manDir){
             case 0: { // Player holding up
                 playerImageB.src = playerPic0[0];
@@ -195,19 +228,56 @@ var move = function(){
                 break;
             }
         }
-    }
+    //}
     update(metric);
     //cam_pos();
 };
+var noObstacle = 36;
+var obstacleX = [759,840,1560,1323,597,525,594,675,1473,1233,594,1404,1473,1557,1473,378,450,516,588,1236,378,378,1083,1155,1005,381,381,453,519,591,1005,1005,1005,1485,1554,840];
+var obstacleY = [366,366,432,432,516,600,600,600,681,681,681,765,765,765,849,1011,1011,1011,1011,1077,1077,1161,1140,1149,1236,1236,1326,1326,1326,1326,1326,1398,1479,1554,1554,1083];
+var obstacleR=new Array(noObstacle);
 
+
+for (var i = 0; i < noObstacle; i++) {
+    obstacleR[i] = 25;
+}
+
+function isInCir(xx,yy,cx,cy,radius) {
+	var distance = Math.sqrt((xx-cx)*(xx-cx) + (yy-cy)*(yy-cy));
+	if (distance > radius*1.5) return false;
+	else return true;
+}
+var fuck;
+// compare with all obstacle
+function allObstacle() {
+	var closetOb = -1;
+	var minD = 20000;
+	for (var i = 0; i  < noObstacle; i++) {
+		var distance = Math.sqrt((obstacleX[i] - realX)*(obstacleX[i] - realX) + (obstacleY[i]- realY)*(obstacleY[i] - realY));
+		if (distance < minD) {
+			minD = distance;
+			closetOb = i;
+		}
+	}
+	fuck = minD;
+	return closetOb;
+}
 
 // Update player object
 var update = function (modifier) {
+	var co = allObstacle(); //closetObstacle
+	var cox = obstacleX[co];
+	var coy = obstacleY[co];
+	var cor = obstacleR[co];
     switch(manDir){
         case 0: { // Player holding up
             //player.y -= modifier;
 			 var nextUp = d.y - modifier;
-			if (nextUp> upBorder) {
+			 var collision = false; 
+			 if (co != -1){
+				collision = isInCir(realX,realY-modifier,cox,coy,cor);
+			 } 
+			if ((nextUp> upBorder) && (!collision)) {
             camera.y -= modifier;
 			d.y -= modifier;
 			}
@@ -219,7 +289,11 @@ var update = function (modifier) {
         case 1: { // Player holding down
             //player.y += modifier;
 			var nextDown = d.y + modifier;
-			if(nextDown < downBorder) {
+			var collision = false;
+			if (co!= -1){
+		     collision = isInCir(realX,realY+modifier,cox,coy,cor);
+		   } 
+			if ((nextDown < downBorder)&&(!collision)) {
             camera.y +=modifier;
 			d.y+=modifier;
 			}
@@ -231,7 +305,11 @@ var update = function (modifier) {
         case 2:{ // Player holding left
             //player.x -= modifier;
 			var nextLeft = d.x - modifier;
-			if (nextLeft> leftBorder) {
+			var collision = false;
+			if (co!= -1){
+				collision = isInCir(realX-modifier,realY,cox,coy,cor);
+			} 
+			if ((nextLeft> leftBorder) &&(!collision)){
             camera.x-= modifier;
             d.x-=modifier;
 			}
@@ -243,7 +321,11 @@ var update = function (modifier) {
         case 3: { // Player holding right
             //player.x += modifier;
 			var nextRight = d.x + modifier;
-			if (nextRight < rightBorder) {
+			var collision = false;
+			if (co!= -1) {	
+				collision = isInCir(realX+modifier,realY,cox,coy,cor);
+			}
+			if ((nextRight < rightBorder) &&(!collision)) {
             camera.x+=modifier;
 			d.x+=modifier;
 			}
@@ -252,7 +334,6 @@ var update = function (modifier) {
             playerImage.src = playerPic3[step];
             break;
             }
-
     }
 
 };
@@ -262,25 +343,50 @@ var update = function (modifier) {
 function get_cam(){
     return camera;
 }
-
+/*function draw_obstacles(){
+    for (var i = 0; i< noObstacle; i++) {
+        ctx.beginPath();
+        ctx.arc(obstacleX[i] - camera.x, obstacleY[i] - camera.y,obstacleR[i] , 0, 2 * Math.PI, false);
+        ctx.fillStyle = 'red';
+        if (i == 0)
+            ctx.fillStyle = 'green';
+        ctx.fill();
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = '#003300';
+        ctx.stroke();
+    }
+}*/
 
 //------------------------------------------------EEEEEEEEEnd: real thing------------------------------------------
 
-
 // Draw everything
 var render = function () {
+
+
     if (bgReady) {
         ctx.drawImage(bgImage, -camera.x, -camera.y);
     }
 
-    if (playerReady) {
-        ctx.drawImage(playerImageB, player.x- 40, player.y- 40);
-        ctx.drawImage(playerImage, player.x-40, player.y- 40); //double buffer
+if (playerReady && playerReadyB) {
+        ctx.drawImage(playerImageB, player.x, player.y);
+        ctx.drawImage(playerImage, player.x, player.y); //doule Buffer
+    }
+
+    if (day_or_night==1){
+        darken_effect();
+    }
+
+    //this is for testing obstacle
+    //draw_obstacles();
+
+    //the cover for night vision
+    if (bgReady_nite) {
+        ctx.drawImage(bgImage_nite, 0, 0);
     }
 	
 	if(gfReady){
 	    if((Math.sqrt((d.x - gift_x)*(d.x - gift_x) + (d.y - gift_y)*(d.y - gift_y) ) > 30))
-		ctx.drawImage(gfImage, -d.x+240+gift_x, -d.y+240+gift_y); 
+		ctx.drawImage(gfImage, -d.x+200+gift_x, -d.y+200+gift_y); 
 		else
 		{
 			if(giftPicked == false)
@@ -298,16 +404,15 @@ var render = function () {
 			enImage.src = energyImg[Math.floor(energy/20)+1];
 	}
 		
-	if (enReady) {
+	if (enReady) 
 		
         ctx.drawImage(enImage, 80, 64);
-    }
-
-    // Score
+	
     ctx.fillStyle = "rgb(250, 250, 250)";
     ctx.font = "24px Helvetica";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
+
     var the_text="step:" + step +" x:"+d.x+" y:"+d.y+" CamX:"+get_cam().x+" CamY:"+get_cam().y + "score:"+score;
 	ctx.fillStyle = "blue";
     ctx.fillText(the_text, 32, 32);
@@ -318,6 +423,7 @@ var render = function () {
 
 // The main game loop
 var main = function () {
+    set_day_night();
 	move();
     render();
     requestAnimationFrame(main);

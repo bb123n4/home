@@ -5,9 +5,16 @@
     <title>shishi</title>
 	<script src = "./js/timer.js" async = "async"></script>
 </head>
-
-    <body onload = "timedCount()">
+    <body onload = "timedCount()" style = "text-align:center;background-color:gray;">
     <script type="text/javascript" src="./js/zoulu.js"></script>
 	
-</body>
+		<audio autoplay loop>
+				<source src="music/daymusic.wav">
+		</audio>
+		
+		<audio preload id="stepSound">
+				<source src="music/step.wav"></source>
+		</audio>
+	</body>
+
 </html>
