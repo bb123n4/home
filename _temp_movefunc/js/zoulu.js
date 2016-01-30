@@ -251,12 +251,6 @@ var render = function () {
     var the_text="step:" + step +" x:"+d.x+" y:"+d.y+" CamX:"+get_cam().x+" CamY:"+get_cam().y;
 	ctx.fillStyle = "blue";
     ctx.fillText(the_text, 32, 32);
-	for (var i =0; i < 16; i++) 
-		for (var j = 0; j<16; j++) {
-				if (grid[i][j] == 1) ctx.fillStyle ="red";
-				else ctx.fillStyle = "Ghostwhite";
-				ctx.fillRect ()
-		}
 };
 
 // The main game loop
