@@ -57,6 +57,9 @@ playerImageB.onload = function () {
 var realX = 0 ;
 var realY = 0;
 
+var giftX = 960;
+var giftY = 960;
+
 var player = {};
 var metric=6;
 //current and last facing directions
@@ -228,6 +231,22 @@ function allObstacle() {
 	return closetOb;
 }
 
+/*function canvas_arrow() {
+    var headlen = 10;   // length of head in pixels
+	var fromx = 500;
+	var fromy = 500;
+	var tox = 550;
+	var toy = 570;
+	//var k = (giftY-giftX)/(realY-realX);
+    var angle = Math.atan2(toy-fromy,tox-fromx);
+		ctx.fillStyle ="red";
+		ctx.moveTo(fromx, fromy);
+		ctx.lineTo(tox, toy);
+		ctx.lineTo(tox-headlen*Math.cos(angle-Math.PI/6),toy-headlen*Math.sin(angle-Math.PI/6));
+		ctx.moveTo(tox, toy);
+		ctx.lineTo(tox-headlen*Math.cos(angle+Math.PI/6),toy-headlen*Math.sin(angle+Math.PI/6));
+}*/
+	
 // Update player object
 var update = function (modifier) {
 	var co = allObstacle(); //closetObstacle
@@ -353,9 +372,27 @@ var render = function () {
     ctx.font = "24px Helvetica";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
-    var the_text="cl:" + fuck+" " +allObstacle();
+    var the_text="cl:sadasdsa" + fuck+" " +allObstacle();
 	ctx.fillStyle = "blue";
     ctx.fillText(the_text, 32, 32);
+	//canvas_arrow();//draw arrow
+	var headlen = 10;   // length of head in pixels
+	var fromx = 500;
+	var fromy = 500;
+	var arrowL= 50;
+	//var k = (giftY-giftX)/(realY-realX);
+    var angle = Math.atan2(realY-giftY,realX-giftX);
+	var tox = fromx - arrowL * Math.cos(angle);
+	var toy = fromy - arrowL * Math.sin(angle);
+	    ctx.strokeStyle = "red";
+		ctx.lineWidth = 3;
+		ctx.beginPath();
+		ctx.moveTo(fromx, fromy);
+		ctx.lineTo(tox, toy);
+		ctx.lineTo(tox+headlen*Math.cos(angle-Math.PI/4),toy+headlen*Math.sin(angle-Math.PI/4));
+		ctx.moveTo(tox, toy);
+		ctx.lineTo(tox+headlen*Math.cos(angle+Math.PI/4),toy+headlen*Math.sin(angle+Math.PI/4));
+		ctx.stroke();
 };
 
 // The main game loop
