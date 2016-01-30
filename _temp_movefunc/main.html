@@ -1,0 +1,48 @@
+<html>
+<head>
+	<script type="text/javascript" src="sound-mouseover.js"></script>
+	<style>
+	#page
+	{
+        height: 640px;
+        width: 640px;
+        margin:0 auto;
+        background-image: url('images/menu.png');
+        background-repeat:no-repeat;
+       -webkit-background-size: cover;
+        -moz-background-size: cover;
+        background-size: cover;     
+        background-position: center;     
+	
+	}
+
+	</style>
+</head>
+
+<body style="text-align:center;background-color:gray;">
+
+<audio autoplay loop>
+      <source src="music/mainpage.wav">
+</audio>
+
+
+<div id="page" style="margin-top:100px;">
+<div style="padding-top:280px" onclick="document.getElementById('clickSound').play();">
+	
+	<a href="shishi.html"><img src="images/start.png" onmouseover="this.src='images/starth.png';document.getElementById('hoverSound').play();" onmouseout="this.src='images/start.png'" onmousedown="document.getElementById('clickSound').play();" border="0" alt=""/></a>
+</div>
+</div>
+
+<audio preload id="hoverSound">
+<source src="music/hover.wav"></source>
+</audio>
+
+<audio preload id="clickSound">
+<source src="music/click.wav"></source>
+</audio>
+
+
+</body>
+
+
+</html>
