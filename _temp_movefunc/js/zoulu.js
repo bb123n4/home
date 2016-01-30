@@ -55,7 +55,7 @@ var score =0;
 //Energy
 
 
-var energy = 300;
+var energy = 60;
 
 var enReady = false;
 var enImage = new Image();
@@ -438,16 +438,16 @@ if (playerReady && playerReadyB) {
     ctx.font = "24px Helvetica";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
-    var the_text="step:" + step +" x:"+realX+" y:"+realY+" CamX:"+get_cam().x+" CamY:"+get_cam().y + "score:"+score;
-	ctx.fillStyle = "blue";
+    var the_text=/*"step:" + step +" x:"+realX+" y:"+realY+" CamX:"+get_cam().x+" CamY:"+get_cam().y +*/ "Score:"+score;
+	//ctx.fillStyle = "blue";
     ctx.fillText(the_text, 32, 32);
 	var the_text="Energy:" + energy;
-	ctx.fillStyle = "while";
+	ctx.fillStyle = "white";
     ctx.fillText(the_text, 32, 64);
 	//canvas_arrow();//draw arrow
 	var headlen = 10;   // length of head in pixels
-	var fromx = 500;
-	var fromy = 500;
+	var fromx = 550;
+	var fromy = 550;
 	var arrowL= 50;
 	var pointX =890+gift_x;
 	var pointY =980+gift_y;
