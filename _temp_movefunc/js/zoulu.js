@@ -55,6 +55,7 @@ var score =0;
 //Energy
 
 var energy = 100;
+
 var enReady = false;
 var enImage = new Image();
 enImage.onload = function () {
@@ -263,6 +264,22 @@ function allObstacle() {
 	return closetOb;
 }
 
+/*function canvas_arrow() {
+    var headlen = 10;   // length of head in pixels
+	var fromx = 500;
+	var fromy = 500;
+	var tox = 550;
+	var toy = 570;
+	//var k = (giftY-giftX)/(realY-realX);
+    var angle = Math.atan2(toy-fromy,tox-fromx);
+		ctx.fillStyle ="red";
+		ctx.moveTo(fromx, fromy);
+		ctx.lineTo(tox, toy);
+		ctx.lineTo(tox-headlen*Math.cos(angle-Math.PI/6),toy-headlen*Math.sin(angle-Math.PI/6));
+		ctx.moveTo(tox, toy);
+		ctx.lineTo(tox-headlen*Math.cos(angle+Math.PI/6),toy-headlen*Math.sin(angle+Math.PI/6));
+}*/
+	
 // Update player object
 var update = function (modifier) {
 	var co = allObstacle(); //closetObstacle
@@ -440,6 +457,27 @@ if (playerReady && playerReadyB) {
 	var the_text="Energy:" + energy;
 	ctx.fillStyle = "while";
     ctx.fillText(the_text, 32, 64);
+	//canvas_arrow();//draw arrow
+	var headlen = 10;   // length of head in pixels
+	var fromx = 500;
+	var fromy = 500;
+	var arrowL= 50;
+	var pointX =920+gift_x;
+	var pointY =920+gift_y;
+		  //pointX = 960;
+		  //pointY = 960;
+    var angle = Math.atan2(realY-pointY,realX-pointX);
+	var tox = fromx - arrowL * Math.cos(angle);
+	var toy = fromy - arrowL * Math.sin(angle);
+	    ctx.strokeStyle = "red";
+		ctx.lineWidth = 3;
+		ctx.beginPath();
+		ctx.moveTo(fromx, fromy);
+		ctx.lineTo(tox, toy);
+		ctx.lineTo(tox+headlen*Math.cos(angle-Math.PI/4),toy+headlen*Math.sin(angle-Math.PI/4));
+		ctx.moveTo(tox, toy);
+		ctx.lineTo(tox+headlen*Math.cos(angle+Math.PI/4),toy+headlen*Math.sin(angle+Math.PI/4));
+		ctx.stroke();
 };
 
 // The main game loop
