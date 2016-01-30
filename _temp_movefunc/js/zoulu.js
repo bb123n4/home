@@ -1,6 +1,8 @@
 // Create the canvas
+// Resizes the new window
 var canvas = document.createElement("canvas");
 var ctx = canvas.getContext("2d");
+canvas.style.marginTop= "100px";
 canvas.width = 640;
 canvas.height = 640;
 document.body.appendChild(canvas);
@@ -11,7 +13,7 @@ var bgImage = new Image();
 bgImage.onload = function () {
     bgReady = true;
 };
-bgImage.src = "images/bg.jpg";
+bgImage.src = "images/bigBG.png";
 
 // Background image
 var bgReady_nite = false;
@@ -92,16 +94,25 @@ var playerPic3_nite=["move_Anim/night/right/player_child_right_1.png","move_Anim
 var keysDown = {};
 
 addEventListener("keydown", function (e) {
+	
     keysDown[e.keyCode] = true;
     step=(step+1)%4;
-    if(e.keyCode == 40)
+    if(e.keyCode == 40){
         manDir=1;
-    if(e.keyCode == 38)
+		document.getElementById("stepSound").play();
+	}
+    if(e.keyCode == 38){
+		document.getElementById("stepSound").play();
         manDir=0;
-    if(e.keyCode == 37)
+	}
+    if(e.keyCode == 37){
+		document.getElementById("stepSound").play();
         manDir=2;
-    if(e.keyCode == 39)
+	}
+    if(e.keyCode == 39){
         manDir=3;
+		document.getElementById("stepSound").play();
+	}
 }, false);
 
 addEventListener("keyup", function (e) {
