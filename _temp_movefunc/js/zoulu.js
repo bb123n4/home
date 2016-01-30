@@ -11,11 +11,11 @@ var bgImage = new Image();
 bgImage.onload = function () {
     bgReady = true;
 };
-bgImage.src = "images/background.jpg";
+bgImage.src = "images/bg.jpg";
 
 var camera = {
-    x:100,
-    y:100,
+    x:640,
+    y:640,
     offset_X:30,
     offset_Y:30
 };
@@ -50,9 +50,24 @@ var manDir=-1;
 var lastDir=-1;
 //the status for selecting player image
 var step=0;
+var d = {x:0,y:0};
+var upBorder,downBorder,leftBorder,rightBorder;
+upBorder = -canvas.height; 
+downBorder = canvas.height;
+leftBorder = -canvas.width;
+rightBorder = canvas.width;  // Border Collision
 
-
-
+var grid = new Array(16);
+	for (var i = 0; i<16; i++ ) {
+		grid[i] = new Array(16);
+	}
+	
+	for (var i =0; i < 16; i++) 
+		for (var j = 0; j<16; j++) {
+				if ((i % 2 == 0) && (j % 2 == 0)) {
+					grid[i][j] = 1;
+				} else grid[i][j] = 0;
+	}
 //up position
 var playerPic0_day=["move_Anim/day/up/player_child_up_1.png","move_Anim/day/up/player_child_up_2.png","move_Anim/day/up/player_child_up_3.png","move_Anim/day/up/player_child_up_4.png"];
 //down position
@@ -156,10 +171,13 @@ var move = function(){
 // Update player object
 var update = function (modifier) {
     switch(manDir){
-
         case 0: { // Player holding up
             //player.y -= modifier;
+			 var nextUp = d.y - modifier;
+			if (nextUp> upBorder) {
             camera.y -= modifier;
+			d.y -= modifier;
+			}
             lastDir=manDir;
             manDir=-1;
             playerImage.src = playerPic0[step];
@@ -167,7 +185,11 @@ var update = function (modifier) {
         }
         case 1: { // Player holding down
             //player.y += modifier;
-            camera.y+=modifier;
+			var nextDown = d.y + modifier;
+			if(nextDown < downBorder) {
+            camera.y +=modifier;
+			d.y+=modifier;
+			}
             lastDir=manDir;
             manDir=-1;
             playerImage.src = playerPic1[step];
@@ -175,8 +197,11 @@ var update = function (modifier) {
             }
         case 2:{ // Player holding left
             //player.x -= modifier;
+			var nextLeft = d.x - modifier;
+			if (nextLeft> leftBorder) {
             camera.x-= modifier;
-
+            d.x-=modifier;
+			}
             lastDir=manDir;
             manDir=-1;
             playerImage.src = playerPic2[step];
@@ -184,7 +209,11 @@ var update = function (modifier) {
             }
         case 3: { // Player holding right
             //player.x += modifier;
+			var nextRight = d.x + modifier;
+			if (nextRight < rightBorder) {
             camera.x+=modifier;
+			d.x+=modifier;
+			}
             lastDir=manDir;
             manDir=-1;
             playerImage.src = playerPic3[step];
@@ -205,35 +234,35 @@ function get_cam(){
 
 // Draw everything
 var render = function () {
-
-
     if (bgReady) {
         ctx.drawImage(bgImage, -camera.x, -camera.y);
     }
 
     if (playerReady) {
-        ctx.drawImage(playerImageB, player.x, player.y);
-        ctx.drawImage(playerImage, player.x, player.y);
+        ctx.drawImage(playerImageB, player.x- 40, player.y- 40);
+        ctx.drawImage(playerImage, player.x-40, player.y- 40); //why 2
     }
-
 
     // Score
     ctx.fillStyle = "rgb(250, 250, 250)";
     ctx.font = "24px Helvetica";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
-    var the_text="step:" + step +" x:"+player.x+" y:"+player.y+" CamX:"+get_cam().x+" CamY:"+get_cam().y;
+    var the_text="step:" + step +" x:"+d.x+" y:"+d.y+" CamX:"+get_cam().x+" CamY:"+get_cam().y;
+	ctx.fillStyle = "blue";
     ctx.fillText(the_text, 32, 32);
-
+	for (var i =0; i < 16; i++) 
+		for (var j = 0; j<16; j++) {
+				if (grid[i][j] == 1) ctx.fillStyle ="red";
+				else ctx.fillStyle = "Ghostwhite";
+				ctx.fillRect ()
+		}
 };
 
 // The main game loop
 var main = function () {
-
-
-    move();
+	move();
     render();
-
     requestAnimationFrame(main);
 };
 
