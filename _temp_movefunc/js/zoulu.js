@@ -54,7 +54,7 @@ var score =0;
 
 //Energy
 
-var energy = 10;
+var energy = 100;
 var enReady = false;
 var enImage = new Image();
 enImage.onload = function () {
@@ -369,6 +369,16 @@ function finish()
 
 }
 
+function happyEnding()
+{
+	//finish image
+	var haImage = new Image();
+	haImage.onload = function () {
+		ctx.drawImage(haImage, 0, 0);
+	};
+	haImage.src = "images/happy.png";
+}
+
 //------------------------------------------------EEEEEEEEEnd: real thing------------------------------------------
 
 // Draw everything
@@ -418,15 +428,14 @@ if (playerReady && playerReadyB) {
 		
 	if (enReady) 
 		
-        ctx.drawImage(enImage, 100, 64);
+        ctx.drawImage(enImage, 200, 10);
 	
     ctx.fillStyle = "rgb(250, 250, 250)";
     ctx.font = "24px Helvetica";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
 
-    var the_text="step:" + step +" x:"+d.x+" y:"+d.y+" CamX:"+get_cam().x+" CamY:"+get_cam().y + "score:"+score;
-	ctx.fillStyle = "blue";
+    var the_text="Score:"+score;
     ctx.fillText(the_text, 32, 32);
 	var the_text="Energy:" + energy;
 	ctx.fillStyle = "while";
@@ -438,6 +447,11 @@ var main = function () {
     if(energy == 0)
 	{
 		finish();
+		return;
+	}
+	if(Math.sqrt((d.x - 0)*(d.x - 0) + (d.y - 0)*(d.y - 0)) < 20 && day_or_night == 1)
+	{
+		happyEnding();
 		return;
 	}
 	set_day_night();
