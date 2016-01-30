@@ -33,8 +33,8 @@ gfImage.src = "images/gf.png";
 
 //camera
 var camera = {
-    x:640,
-    y:640
+    x:610,
+    y:700
     //offset_X:30,
     //offset_Y:30
 };
@@ -54,7 +54,7 @@ var score =0;
 
 //Energy
 
-var energy = 1000;
+var energy = 300;
 var enReady = false;
 var enImage = new Image();
 enImage.onload = function () {
@@ -232,15 +232,16 @@ var move = function(){
     update(metric);
     //cam_pos();
 };
-var noObstacle = 36;
-var obstacleX = [759,840,1560,1323,597,525,594,675,1473,1233,594,1404,1473,1557,1473,378,450,516,588,1236,378,378,1083,1155,1005,381,381,453,519,591,1005,1005,1005,1485,1554,840];
-var obstacleY = [366,366,432,432,516,600,600,600,681,681,681,765,765,765,849,1011,1011,1011,1011,1077,1077,1161,1140,1149,1236,1236,1326,1326,1326,1326,1326,1398,1479,1554,1554,1083];
+var noObstacle = 37;
+var obstacleX = [759,840,1560,1323,597,525,594,675,1473,1233,594,1404,1473,1557,1473,378,450,516,588,1236,378,378,1083,1155,1005,381,381,453,519,591,1005,1005,1005,1485,1554,840,960];
+var obstacleY = [366,366,432,432,516,600,600,600,681,681,681,765,765,765,849,1011,1011,1011,1011,1077,1077,1161,1140,1149,1236,1236,1326,1326,1326,1326,1326,1398,1479,1554,1554,1083,960];
 var obstacleR=new Array(noObstacle);
 
 
-for (var i = 0; i < noObstacle; i++) {
+for (var i = 0; i < noObstacle -1; i++) {
     obstacleR[i] = 25;
 }
+obstacleR[36] = 38; // the house
 
 function isInCir(xx,yy,cx,cy,radius) {
 	var distance = Math.sqrt((xx-cx)*(xx-cx) + (yy-cy)*(yy-cy));
@@ -263,21 +264,6 @@ function allObstacle() {
 	return closetOb;
 }
 
-/*function canvas_arrow() {
-    var headlen = 10;   // length of head in pixels
-	var fromx = 500;
-	var fromy = 500;
-	var tox = 550;
-	var toy = 570;
-	//var k = (giftY-giftX)/(realY-realX);
-    var angle = Math.atan2(toy-fromy,tox-fromx);
-		ctx.fillStyle ="red";
-		ctx.moveTo(fromx, fromy);
-		ctx.lineTo(tox, toy);
-		ctx.lineTo(tox-headlen*Math.cos(angle-Math.PI/6),toy-headlen*Math.sin(angle-Math.PI/6));
-		ctx.moveTo(tox, toy);
-		ctx.lineTo(tox-headlen*Math.cos(angle+Math.PI/6),toy-headlen*Math.sin(angle+Math.PI/6));
-}*/
 	
 // Update player object
 var update = function (modifier) {
@@ -440,7 +426,7 @@ if (playerReady && playerReadyB) {
     ctx.font = "24px Helvetica";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
-    var the_text="step:" + step +" x:"+d.x+" y:"+d.y+" CamX:"+get_cam().x+" CamY:"+get_cam().y + "score:"+score;
+    var the_text="step:" + step +" x:"+realX+" y:"+realY+" CamX:"+get_cam().x+" CamY:"+get_cam().y + "score:"+score;
 	ctx.fillStyle = "blue";
     ctx.fillText(the_text, 32, 32);
 	var the_text="Energy:" + energy;
@@ -451,8 +437,8 @@ if (playerReady && playerReadyB) {
 	var fromx = 500;
 	var fromy = 500;
 	var arrowL= 50;
-	var pointX =920+gift_x;
-	var pointY =920+gift_y;
+	var pointX =890+gift_x;
+	var pointY =980+gift_y;
 		  //pointX = 960;
 		  //pointY = 960;
     var angle = Math.atan2(realY-pointY,realX-pointX);
