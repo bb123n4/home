@@ -13,11 +13,20 @@ bgImage.onload = function () {
 };
 bgImage.src = "images/bg.jpg";
 
+//gift image
+var gfReady = false;
+var gfImage = new Image();
+gfImage.onload = function () {
+    gfReady = true;
+};
+gfImage.src = "images/gf.png";
+
+//camera
 var camera = {
     x:640,
-    y:640,
-    offset_X:30,
-    offset_Y:30
+    y:640
+    //offset_X:30,
+    //offset_Y:30
 };
 
 //------------------------------------------------real thing------------------------------------------
@@ -27,20 +36,41 @@ var camera = {
 //  1-night
 var day_or_night=0;
 
+
+
+//score
+var score =0;
+
+//Energy
+
+var energy = 100;
+var enReady = false;
+var enImage = new Image();
+enImage.onload = function () {
+    enReady = true;
+};
+var energyImg = ["move_Anim/Energy/timeBar_06.png","move_Anim/Energy/timeBar_05.png",
+					"move_Anim/Energy/timeBar_04.png","move_Anim/Energy/timeBar_03.png","move_Anim/Energy/timeBar_02.png","move_Anim/Energy/timeBar_01.png"];
+
+
+
+//gift Math.Radom offset
+var gift_x =0;
+var gift_y =0;
+var giftPicked = true;
+
 // Player image
 var playerReady = false;
 var playerImage = new Image();
 playerImage.onload = function () {
     playerReady = true;
 };
-//playerImage.src = "move_Anim/day/down/player_child_down_1.png";
 //Player image buffer for reducing flickering
 var playerReadyB = false;
 var playerImageB = new Image();
 playerImageB.onload = function () {
     playerReadyB = true;
 };
-//playerImageB.src = "move_Anim/day/down/player_child_down_1.png";
 
 
 var player = {};
@@ -57,17 +87,7 @@ downBorder = canvas.height;
 leftBorder = -canvas.width;
 rightBorder = canvas.width;  // Border Collision
 
-var grid = new Array(16);
-	for (var i = 0; i<16; i++ ) {
-		grid[i] = new Array(16);
-	}
-	
-	for (var i =0; i < 16; i++) 
-		for (var j = 0; j<16; j++) {
-				if ((i % 2 == 0) && (j % 2 == 0)) {
-					grid[i][j] = 1;
-				} else grid[i][j] = 0;
-	}
+
 //up position
 var playerPic0_day=["move_Anim/day/up/player_child_up_1.png","move_Anim/day/up/player_child_up_2.png","move_Anim/day/up/player_child_up_3.png","move_Anim/day/up/player_child_up_4.png"];
 //down position
@@ -102,6 +122,9 @@ addEventListener("keydown", function (e) {
         manDir=2;
     if(e.keyCode == 39)
         manDir=3;
+	
+	giftPicked = false;
+	
 }, false);
 
 addEventListener("keyup", function (e) {
@@ -116,7 +139,17 @@ var reset = function () {
     set_day_night();
     playerImage.src = playerPic1[0];
     playerImageB.src = playerImage.src;
+	resetGift();
 };
+
+//reset the gift after pickup
+
+function resetGift()
+{
+	gift_x = Math.pow(-1,Math.round((Math.random()*10%2)))*Math.round((Math.random()*1000%638));
+	gift_y = Math.pow(-1,Math.round((Math.random()*10%2)))*Math.round((Math.random()*1000%638));
+}
+
 // the image paths to be loaded according to daytime or night
 var set_day_night = function () {
 
@@ -223,6 +256,8 @@ var update = function (modifier) {
     }
 
 };
+
+
 //return the object camera, camera.x and camera.y are the camera locations
 function get_cam(){
     return camera;
@@ -240,7 +275,32 @@ var render = function () {
 
     if (playerReady) {
         ctx.drawImage(playerImageB, player.x- 40, player.y- 40);
-        ctx.drawImage(playerImage, player.x-40, player.y- 40); //why 2
+        ctx.drawImage(playerImage, player.x-40, player.y- 40); //double buffer
+    }
+	
+	if(gfReady){
+	    if((Math.sqrt((d.x - gift_x)*(d.x - gift_x) + (d.y - gift_y)*(d.y - gift_y) ) > 30))
+		ctx.drawImage(gfImage, -d.x+240+gift_x, -d.y+240+gift_y); 
+		else
+		{
+			if(giftPicked == false)
+			{
+				resetGift();
+				score ++
+			}
+			giftPicked == true;
+		}
+	}
+	
+	if(energy == 0)
+			enImage.src = energyImg[0];
+	else{
+			enImage.src = energyImg[Math.floor(energy/20)+1];
+	}
+		
+	if (enReady) {
+		
+        ctx.drawImage(enImage, 80, 64);
     }
 
     // Score
@@ -248,9 +308,12 @@ var render = function () {
     ctx.font = "24px Helvetica";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
-    var the_text="step:" + step +" x:"+d.x+" y:"+d.y+" CamX:"+get_cam().x+" CamY:"+get_cam().y;
+    var the_text="step:" + step +" x:"+d.x+" y:"+d.y+" CamX:"+get_cam().x+" CamY:"+get_cam().y + "score:"+score;
 	ctx.fillStyle = "blue";
     ctx.fillText(the_text, 32, 32);
+	var the_text="Energy:" + energy;
+	ctx.fillStyle = "black";
+    ctx.fillText(the_text, 32, 64);
 };
 
 // The main game loop
