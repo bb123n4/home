@@ -57,17 +57,6 @@ downBorder = canvas.height;
 leftBorder = -canvas.width;
 rightBorder = canvas.width;  // Border Collision
 
-var grid = new Array(16);
-	for (var i = 0; i<16; i++ ) {
-		grid[i] = new Array(16);
-	}
-	
-	for (var i =0; i < 16; i++) 
-		for (var j = 0; j<16; j++) {
-				if ((i % 2 == 0) && (j % 2 == 0)) {
-					grid[i][j] = 1;
-				} else grid[i][j] = 0;
-	}
 //up position
 var playerPic0_day=["move_Anim/day/up/player_child_up_1.png","move_Anim/day/up/player_child_up_2.png","move_Anim/day/up/player_child_up_3.png","move_Anim/day/up/player_child_up_4.png"];
 //down position
@@ -111,8 +100,8 @@ addEventListener("keyup", function (e) {
 
 // init the game: player position, camera position and the image path to be loaded
 var reset = function () {
-    player.x = canvas.width / 2;
-    player.y = canvas.height / 2;
+    player.x = canvas.width / 2 - 40;
+    player.y = canvas.height / 2 - 40;
     set_day_night();
     playerImage.src = playerPic1[0];
     playerImageB.src = playerImage.src;
@@ -166,15 +155,54 @@ var move = function(){
     update(metric);
     //cam_pos();
 };
+var noObstacle = 2;
+var obstacleX=new Array(noObstacle);
+var obstacleY=new Array(noObstacle);
+var obstacleR=new Array(noObstacle);
+obstacleX[0] = 720;
+obstacleY[0] = 720;
+obstacleX[1] = 800;
+obstacleY[1] = 800;
+obstacleR[0] = 30;
+obstacleR[1] = 30;
 
-
+function isInCir(xx,yy,cx,cy,radius) {
+	var distance = Math.sqrt((xx-cx)*(xx-cx) + (yy-cy)*(yy-cy));
+	if (distance > radius*1.5) return false;
+	else return true;
+}
+var fuck;
+// compare with all obstacle
+function allObstacle() {
+	var closetOb = -1;
+	var minD = 20000;
+	for (var i = 0; i  < noObstacle; i++) {
+		var distance = Math.sqrt((obstacleX[i] - realX)*(obstacleX[i] - realX) + (obstacleY[i]- realY)*(obstacleY[i] - realY));
+		if (distance < minD) {
+			minD = distance;
+			closetOb = i;
+		}
+	}
+	fuck = minD;
+	return closetOb;
+}
+var realX = 0 ;
+var realY = 0;
 // Update player object
 var update = function (modifier) {
+	var co = allObstacle(); //closetObstacle
+	var cox = obstacleX[co];
+	var coy = obstacleY[co];
+	var cor = obstacleR[co];
     switch(manDir){
         case 0: { // Player holding up
             //player.y -= modifier;
 			 var nextUp = d.y - modifier;
-			if (nextUp> upBorder) {
+			 var collision = false; 
+			 if (co != -1){
+				collision = isInCir(realX,realY-modifier,cox,coy,cor);
+			 } 
+			if ((nextUp> upBorder) && (!collision)) {
             camera.y -= modifier;
 			d.y -= modifier;
 			}
@@ -186,7 +214,11 @@ var update = function (modifier) {
         case 1: { // Player holding down
             //player.y += modifier;
 			var nextDown = d.y + modifier;
-			if(nextDown < downBorder) {
+			var collision = false;
+			if (co!= -1){
+		     collision = isInCir(realX,realY+modifier,cox,coy,cor);
+		   } 
+			if ((nextDown < downBorder)&&(!collision)) {
             camera.y +=modifier;
 			d.y+=modifier;
 			}
@@ -198,7 +230,11 @@ var update = function (modifier) {
         case 2:{ // Player holding left
             //player.x -= modifier;
 			var nextLeft = d.x - modifier;
-			if (nextLeft> leftBorder) {
+			var collision = false;
+			if (co!= -1){
+				collision = isInCir(realX-modifier,realY,cox,coy,cor);
+			} 
+			if ((nextLeft> leftBorder) &&(!collision)){
             camera.x-= modifier;
             d.x-=modifier;
 			}
@@ -210,7 +246,11 @@ var update = function (modifier) {
         case 3: { // Player holding right
             //player.x += modifier;
 			var nextRight = d.x + modifier;
-			if (nextRight < rightBorder) {
+			var collision = false;
+			if (co!= -1) {	
+				collision = isInCir(realX+modifier,realY,cox,coy,cor);
+			}
+			if ((nextRight < rightBorder) &&(!collision)) {
             camera.x+=modifier;
 			d.x+=modifier;
 			}
@@ -219,7 +259,6 @@ var update = function (modifier) {
             playerImage.src = playerPic3[step];
             break;
             }
-
     }
 
 };
@@ -231,24 +270,37 @@ function get_cam(){
 
 //------------------------------------------------EEEEEEEEEnd: real thing------------------------------------------
 
-
 // Draw everything
 var render = function () {
     if (bgReady) {
         ctx.drawImage(bgImage, -camera.x, -camera.y);
     }
 
-    if (playerReady) {
-        ctx.drawImage(playerImageB, player.x- 40, player.y- 40);
-        ctx.drawImage(playerImage, player.x-40, player.y- 40); //why 2
+    if (playerReady && playerReadyB) {
+        ctx.drawImage(playerImageB, player.x, player.y);
+        ctx.drawImage(playerImage, player.x, player.y); //why 2
     }
+	realX = player.x + camera.x + 40;
+	realY = player.y + camera.y + 40;
+	
+	for (var i = 0; i< noObstacle; i++) {
+	  ctx.beginPath();
+      ctx.arc(obstacleX[i] - camera.x, obstacleY[i] - camera.y,obstacleR[i] , 0, 2 * Math.PI, false);
+	  ctx.fillStyle = 'red';
+	  if (i == 0)
+      ctx.fillStyle = 'green';
+      ctx.fill();
+      ctx.lineWidth = 5;
+      ctx.strokeStyle = '#003300';
+      ctx.stroke();
+	}
 
     // Score
     ctx.fillStyle = "rgb(250, 250, 250)";
     ctx.font = "24px Helvetica";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
-    var the_text="step:" + step +" x:"+d.x+" y:"+d.y+" CamX:"+get_cam().x+" CamY:"+get_cam().y;
+    var the_text="cl:" + fuck+" " +allObstacle();
 	ctx.fillStyle = "blue";
     ctx.fillText(the_text, 32, 32);
 };
