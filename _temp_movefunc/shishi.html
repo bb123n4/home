@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>shishi</title>
+	<script src = "./js/timer.js" async = "async"></script>
 </head>
-
-    <body style = "text-align:center;background-color:gray;">
-		<script type="text/javascript" src="./js/zoulu.js"></script>
+    <body onload = "timedCount()" style = "text-align:center;background-color:gray;">
+    <script type="text/javascript" src="./js/zoulu.js"></script>
+	
 		<audio autoplay loop>
-				<source src="music/daymusic.wav">
+				<source id = "bgm" src="music/daymusic.wav"></source>
 		</audio>
 		
 		<audio preload id="stepSound">
@@ -16,4 +17,5 @@
 		</audio>
 		
 	</body>
+
 </html>

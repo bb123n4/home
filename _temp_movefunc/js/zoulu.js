@@ -24,11 +24,20 @@ bgImage_nite.onload = function () {
 };
 bgImage_nite.src = "images/night_cover.png";
 
+//gift image
+var gfReady = false;
+var gfImage = new Image();
+gfImage.onload = function () {
+    gfReady = true;
+};
+gfImage.src = "images/gf.png";
+
+//camera
 var camera = {
-    x:640,
-    y:640,
-    offset_X:30,
-    offset_Y:30
+    x:610,
+    y:700
+    //offset_X:30,
+    //offset_Y:30
 };
 
 var walking;
@@ -41,20 +50,43 @@ var walking;
 var day_or_night=0;
 var darken_timer=0;
 
+
+
+//score
+var score =0;
+
+//Energy
+
+
+var energy = 60;
+
+var enReady = false;
+var enImage = new Image();
+enImage.onload = function () {
+    enReady = true;
+};
+var energyImg = ["move_Anim/Energy/timeBar_06.png","move_Anim/Energy/timeBar_05.png",
+					"move_Anim/Energy/timeBar_04.png","move_Anim/Energy/timeBar_03.png","move_Anim/Energy/timeBar_02.png","move_Anim/Energy/timeBar_01.png"];
+
+
+
+//gift Math.Radom offset
+var gift_x =0;
+var gift_y =0;
+var giftPicked = true;
+
 // Player image
 var playerReady = false;
 var playerImage = new Image();
 playerImage.onload = function () {
     playerReady = true;
 };
-//playerImage.src = "move_Anim/day/down/player_child_down_1.png";
 //Player image buffer for reducing flickering
 var playerReadyB = false;
 var playerImageB = new Image();
 playerImageB.onload = function () {
     playerReadyB = true;
 };
-//playerImageB.src = "move_Anim/day/down/player_child_down_1.png";
 
 //the location of people-center, to be updated in the main loop
 var realX = 0 ;
@@ -69,10 +101,10 @@ var lastDir=-1;
 var step=0;
 var d = {x:0,y:0};
 var upBorder,downBorder,leftBorder,rightBorder;
-upBorder = -canvas.height; 
-downBorder = canvas.height;
-leftBorder = -canvas.width;
-rightBorder = canvas.width;  // Border Collision
+upBorder = -canvas.height - 120; 
+downBorder = canvas.height + 120 ;
+leftBorder = -canvas.width - 60;
+rightBorder = canvas.width + 60;  // Border Collision wiht offset 
 
 //up position
 var playerPic0_day=["move_Anim/day/up/player_child_up_1.png","move_Anim/day/up/player_child_up_2.png","move_Anim/day/up/player_child_up_3.png","move_Anim/day/up/player_child_up_4.png"];
@@ -120,12 +152,7 @@ addEventListener("keydown", function (e) {
     if(e.keyCode == 39){
         manDir=3;
 	}
-    if(e.keyCode == 77){
-        day_or_night=1;
-    }
-    if(e.keyCode == 78){
-        day_or_night=0;
-    }
+	giftPicked = false;
 }, false);
 
 addEventListener("keyup", function (e) {
@@ -141,7 +168,17 @@ var reset = function () {
     set_day_night();
     playerImage.src = playerPic1[0];
     playerImageB.src = playerImage.src;
+	resetGift();
 };
+
+//reset the gift after pickup
+
+function resetGift()
+{
+	gift_x = Math.pow(-1,Math.round((Math.random()*10%2)))*Math.round((Math.random()*1000%638));
+	gift_y = Math.pow(-1,Math.round((Math.random()*10%2)))*Math.round((Math.random()*1000%638));
+}
+
 var darken_effect = function(){
     if(darken_timer<5){
         darken_timer++;
@@ -204,15 +241,16 @@ var move = function(){
     update(metric);
     //cam_pos();
 };
-var noObstacle = 36;
-var obstacleX = [759,840,1560,1323,597,525,594,675,1473,1233,594,1404,1473,1557,1473,378,450,516,588,1236,378,378,1083,1155,1005,381,381,453,519,591,1005,1005,1005,1485,1554,840];
-var obstacleY = [366,366,432,432,516,600,600,600,681,681,681,765,765,765,849,1011,1011,1011,1011,1077,1077,1161,1140,1149,1236,1236,1326,1326,1326,1326,1326,1398,1479,1554,1554,1083];
+var noObstacle = 37;
+var obstacleX = [759,840,1560,1323,597,525,594,675,1473,1233,594,1404,1473,1557,1473,378,450,516,588,1236,378,378,1083,1155,1005,381,381,453,519,591,1005,1005,1005,1485,1554,840,960];
+var obstacleY = [366,366,432,432,516,600,600,600,681,681,681,765,765,765,849,1011,1011,1011,1011,1077,1077,1161,1140,1149,1236,1236,1326,1326,1326,1326,1326,1398,1479,1554,1554,1083,960];
 var obstacleR=new Array(noObstacle);
 
 
-for (var i = 0; i < noObstacle; i++) {
+for (var i = 0; i < noObstacle -1; i++) {
     obstacleR[i] = 25;
 }
+obstacleR[36] = 38; // the house
 
 function isInCir(xx,yy,cx,cy,radius) {
 	var distance = Math.sqrt((xx-cx)*(xx-cx) + (yy-cy)*(yy-cy));
@@ -235,6 +273,7 @@ function allObstacle() {
 	return closetOb;
 }
 
+	
 // Update player object
 var update = function (modifier) {
 	var co = allObstacle(); //closetObstacle
@@ -309,6 +348,8 @@ var update = function (modifier) {
     }
 
 };
+
+
 //return the object camera, camera.x and camera.y are the camera locations
 function get_cam(){
     return camera;
@@ -326,6 +367,28 @@ function get_cam(){
         ctx.stroke();
     }
 }*/
+
+function finish()
+{
+	//finish image
+	var fiImage = new Image();
+	fiImage.onload = function () {
+		ctx.drawImage(fiImage, 0, 0);
+		//document.findElementById("bgm").remove();
+	};
+	fiImage.src = "images/finish.png";
+
+}
+
+function happyEnding()
+{
+	//finish image
+	var haImage = new Image();
+	haImage.onload = function () {
+		ctx.drawImage(haImage, 0, 0);
+	};
+	haImage.src = "images/happy.png";
+}
 
 //------------------------------------------------EEEEEEEEEnd: real thing------------------------------------------
 var canvas2 = document.createElement("canvas");
@@ -408,14 +471,13 @@ window.requestAnimationFrame = (function(){
 var render = function () {
 
 
-
     if (bgReady) {
         ctx.drawImage(bgImage, -camera.x, -camera.y);
     }
 
-    if (playerReady && playerReadyB) {
+if (playerReady && playerReadyB) {
         ctx.drawImage(playerImageB, player.x, player.y);
-        ctx.drawImage(playerImage, player.x, player.y); //why 2
+        ctx.drawImage(playerImage, player.x, player.y); //doule Buffer
     }
 
     if (day_or_night==1){
@@ -429,20 +491,77 @@ var render = function () {
     if (bgReady_nite) {
         ctx.drawImage(bgImage_nite, 0, 0);
     }
-
-    // Score
+	
+	if(gfReady){
+	    if((Math.sqrt((d.x - gift_x)*(d.x - gift_x) + (d.y - gift_y)*(d.y - gift_y) ) > 30))
+		ctx.drawImage(gfImage, -d.x+260+gift_x, -d.y+260+gift_y); 
+		else
+		{
+			if(giftPicked == false)
+			{
+				resetGift();
+				score ++
+			}
+			giftPicked == true;
+		}
+	}
+	
+	if(energy == 0)
+			enImage.src = energyImg[0];
+	else{
+			enImage.src = energyImg[Math.floor(energy/20)+1];
+	}
+		
+	if (enReady) 
+		
+        ctx.drawImage(enImage, 200, 10);
+	
     ctx.fillStyle = "rgb(250, 250, 250)";
     ctx.font = "24px Helvetica";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
-    var the_text="cl:" + fuck+" " +allObstacle();
-	ctx.fillStyle = "blue";
+    var the_text=/*"step:" + step +" x:"+realX+" y:"+realY+" CamX:"+get_cam().x+" CamY:"+get_cam().y +*/ "Score:"+score;
+	//ctx.fillStyle = "blue";
     ctx.fillText(the_text, 32, 32);
+	var the_text="Energy:" + energy;
+	ctx.fillStyle = "white";
+    ctx.fillText(the_text, 32, 64);
+	//canvas_arrow();//draw arrow
+	var headlen = 10;   // length of head in pixels
+	var fromx = 550;
+	var fromy = 550;
+	var arrowL= 50;
+	var pointX =890+gift_x;
+	var pointY =980+gift_y;
+		  //pointX = 960;
+		  //pointY = 960;
+    var angle = Math.atan2(realY-pointY,realX-pointX);
+	var tox = fromx - arrowL * Math.cos(angle);
+	var toy = fromy - arrowL * Math.sin(angle);
+	    ctx.strokeStyle = "red";
+		ctx.lineWidth = 3;
+		ctx.beginPath();
+		ctx.moveTo(fromx, fromy);
+		ctx.lineTo(tox, toy);
+		ctx.lineTo(tox+headlen*Math.cos(angle-Math.PI/4),toy+headlen*Math.sin(angle-Math.PI/4));
+		ctx.moveTo(tox, toy);
+		ctx.lineTo(tox+headlen*Math.cos(angle+Math.PI/4),toy+headlen*Math.sin(angle+Math.PI/4));
+		ctx.stroke();
 };
 
 // The main game loop
 var main = function () {
-    set_day_night();
+    if(energy == 0)
+	{
+		finish();
+		return;
+	}
+	if(Math.sqrt((d.x - 0)*(d.x - 0) + (d.y - 0)*(d.y - 0)) < 20 && day_or_night == 1)
+	{
+		happyEnding();
+		return;
+	}
+	set_day_night();
 	move();
     render();
     requestAnimationFrame(main);
