@@ -2,9 +2,10 @@
 // Resizes the new window
 var canvas = document.createElement("canvas");
 var ctx = canvas.getContext("2d");
-canvas.style.marginTop= "100px";
+canvas.style.margin= "100px auto 0 auto";
 canvas.width = 640;
 canvas.height = 640;
+canvas.style.position="absolute";
 document.body.appendChild(canvas);
 
 // Background image
@@ -29,6 +30,8 @@ var camera = {
     offset_X:30,
     offset_Y:30
 };
+
+var walking;
 
 //------------------------------------------------real thing------------------------------------------
 
@@ -98,21 +101,24 @@ addEventListener("keydown", function (e) {
 	
     keysDown[e.keyCode] = true;
     step=(step+1)%4;
+    if(e.keyCode ==40 || e.keyCode ==38 || e.keyCode ==37 || e.keyCode == 39){
+        walking=1;
+        document.getElementById("stepSound").play();
+    }
+    else
+        walking=0;
+
     if(e.keyCode == 40){
         manDir=1;
-		document.getElementById("stepSound").play();
 	}
     if(e.keyCode == 38){
-		document.getElementById("stepSound").play();
         manDir=0;
 	}
     if(e.keyCode == 37){
-		document.getElementById("stepSound").play();
         manDir=2;
 	}
     if(e.keyCode == 39){
         manDir=3;
-		document.getElementById("stepSound").play();
 	}
     if(e.keyCode == 77){
         day_or_night=1;
@@ -124,6 +130,7 @@ addEventListener("keydown", function (e) {
 
 addEventListener("keyup", function (e) {
     delete keysDown[e.keyCode];
+    walking=0;
 }, false);
 
 
@@ -321,6 +328,81 @@ function get_cam(){
 }*/
 
 //------------------------------------------------EEEEEEEEEnd: real thing------------------------------------------
+var canvas2 = document.createElement("canvas");
+var ctxD = canvas2.getContext("2d");
+canvas2.style.margin= "100px auto 0 auto";
+canvas2.width = 640;
+canvas2.height = 640;
+canvas2.style.position="absolute";
+document.body.appendChild(canvas2);
+
+//function drawDust(){
+
+   var alpha = 0,          /// current alpha
+    delta = 0.1,        /// delta value = speed
+    img = new Image();  /// create image to draw
+
+/// when loading is ok:
+    img.onload = function() {
+        ctxD.save();
+    /// start loop
+
+    loop();
+    
+    function loop() {
+        
+        /// increase alpha with delta value
+        if(walking==1){
+        alpha += delta;
+        
+        //// if delta <=0 or >=1 then reverse
+        if (alpha <= 0 || alpha >= 1) delta = -delta;
+        
+        /// clear canvas
+        ctxD.clearRect(0, 0, 640, 640);
+        
+        /// set global alpha
+        ctxD.globalAlpha = alpha;
+        
+        /// re-draw image
+
+        ctxD.drawImage(img, player.x+20, player.y+60);
+
+        ctxD.restore();}
+        else{
+                    ctxD.clearRect(0, 0, 640, 640);
+
+        }
+        
+        /// loop using rAF
+        
+        requestAnimationFrame(loop);
+    }
+}
+
+
+
+/// image to load
+img.src = 'images/dust.png';
+
+
+window.requestAnimationFrame = (function(){
+
+  return  window.requestAnimationFrame       ||
+          window.webkitRequestAnimationFrame ||
+          window.mozRequestAnimationFrame    ||
+          function( callback ){
+            
+                window.setTimeout(callback, 1000 / 100);
+          };
+})();
+
+
+
+
+
+
+
 
 // Draw everything
 var render = function () {
