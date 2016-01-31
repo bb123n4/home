@@ -6,15 +6,26 @@
 	<script src = "./js/timer.js" async = "async"></script>
 </head>
     <body onload = "timedCount()" style = "text-align:center;background-color:gray;">
-    <script type="text/javascript" src="./js/zoulu.js"></script>
-	
-		<audio autoplay loop>
+    	
+    	<div id="container" style="position:relative; margin:0 auto; height:640px">
+		</div>
+
+		<script type="text/javascript" src="./js/zoulu.js"></script>
+
+		<audio autoplay loop id="backtrack">
 				<source id = "bgm" src="music/daymusic.wav"></source>
 		</audio>
 		
 		<audio preload id="stepSound">
 				<source src="music/step.wav"></source>
 		</audio>
+		<audio preload id="gameover">
+				<source src="music/gameover.mp3"></source>
+		</audio>
+		<audio preload id="win">
+				<source src="music/win.wav"></source>
+		</audio>
+		
 		
 	</body>
 

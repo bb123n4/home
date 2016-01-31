@@ -2,11 +2,16 @@
 // Resizes the new window
 var canvas = document.createElement("canvas");
 var ctx = canvas.getContext("2d");
-canvas.style.margin= "100px auto 0 auto";
+//canvas.style.margin= "100px auto 0 auto";
 canvas.width = 640;
 canvas.height = 640;
 canvas.style.position="absolute";
-document.body.appendChild(canvas);
+var temp=window.innerWidth/2-320;
+canvas.style.left=temp+"px";
+canvas.style.top=0;
+canvas.style.zIndex=0;
+document.getElementById("container").appendChild(canvas);
+
 
 // Background image
 var bgReady = false;
@@ -393,11 +398,14 @@ function happyEnding()
 //------------------------------------------------EEEEEEEEEnd: real thing------------------------------------------
 var canvas2 = document.createElement("canvas");
 var ctxD = canvas2.getContext("2d");
-canvas2.style.margin= "100px auto 0 auto";
+//canvas2.style.margin= "100px auto 0 auto";
 canvas2.width = 640;
 canvas2.height = 640;
 canvas2.style.position="absolute";
-document.body.appendChild(canvas2);
+canvas2.style.left=temp+"px";
+canvas2.style.top=0;
+canvas2.style.zIndex=1;
+document.getElementById("container").appendChild(canvas2);
 
 //function drawDust(){
 
@@ -490,6 +498,7 @@ if (playerReady && playerReadyB) {
     //the cover for night vision
     if (bgReady_nite) {
         ctx.drawImage(bgImage_nite, 0, 0);
+
     }
 	
 	if(gfReady){
@@ -553,11 +562,15 @@ if (playerReady && playerReadyB) {
 var main = function () {
     if(energy == 0)
 	{
+        document.getElementById("backtrack").pause();
+        document.getElementById("gameover").play();
 		finish();
 		return;
 	}
 	if(Math.sqrt((d.x - 0)*(d.x - 0) + (d.y - 0)*(d.y - 0)) < 20 && day_or_night == 1)
 	{
+        document.getElementById("backtrack").pause();
+        document.getElementById("win").play();       
 		happyEnding();
 		return;
 	}
