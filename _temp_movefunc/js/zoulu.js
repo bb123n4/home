@@ -391,6 +391,8 @@ function happyEnding()
 	var haImage = new Image();
 	haImage.onload = function () {
 		ctx.drawImage(haImage, 0, 0);
+		ctx.fillStyle = "black";
+		ctx.fillText("Score:"+score,500,32);
 	};
 	haImage.src = "images/happy.png";
 }
